@@ -1,0 +1,10 @@
+build/**
+integer-fhe
+*.o
+*.iml
+*.stackdump
+*.dll
+*.a
+*.so
+*.ipr
+*.iws
