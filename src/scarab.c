@@ -1,4 +1,4 @@
-#include "integer-fhe.h"
+#include "scarab.h"
 #include "time.h"
 
 #define SEED time(NULL)

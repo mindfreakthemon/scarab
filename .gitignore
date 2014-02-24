@@ -8,3 +8,4 @@ integer-fhe
 *.so
 *.ipr
 *.iws
+*.exe

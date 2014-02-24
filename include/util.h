@@ -3,8 +3,8 @@
 #define UTIL_H
 
 #include <gmp.h>
-#include <fmpz_poly.h>
-#include <fmpz_mod_poly.h>
+#include <flint/fmpz_poly.h>
+#include <flint/fmpz_mod_poly.h>
 
 int min(int a, int b);
 

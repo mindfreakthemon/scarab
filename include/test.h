@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
-#include "integer-fhe.h"
+#include "scarab.h"
 
 #define RUNS 5
 #define KEYRUNS 10

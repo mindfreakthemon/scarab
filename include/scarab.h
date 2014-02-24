@@ -1,11 +1,11 @@
 #pragma once
-#ifndef INTEGER_FHE_H
-#define INTEGER_FHE_H
+#ifndef SCARAB_H
+#define SCARAB_H
 
 #include <gmp.h>
 #include <assert.h>
-#include <fmpz_poly.h>
-#include <fmpz_mod_poly.h>
+#include <flint/fmpz_poly.h>
+#include <flint/fmpz_mod_poly.h>
 #include "types.h"
 #include "parameters.h"
 #include "util.h"
