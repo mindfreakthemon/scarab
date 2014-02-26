@@ -2,12 +2,12 @@ Scarab
 ======
 
 FHE Library for encrypting/decrypting bits and performing add/mul (and/xor) over encrypted data.
-Port of the existing [library](https://github.com/hcrypt-project/libScarab) by
+Port of the existing [library](https://github.com/hcrypt-project/libScarab) by Henning Perl
 
 Dependencies
 ======
-* GMP: The GNU Multiple Precision Arithmetic Library — https://gmplib.org/
-* MPIR: The GNU Multiple Precision Integers and Rationals — http://mpir.org/ (required by FLINT)
+* GMP: The GNU Multiple Precision Arithmetic Library — https://gmplib.org/ (or MPIR in GMP mode)
+* MPIR: The GNU Multiple Precision Integers and Rationals — http://mpir.org/ (or GMP)
 * MPFR: The GNU Multiple Precision Floating-Point Reliably — http://www.mpfr.org/ (required by FLINT)
 * FLINT: Fast Library for Number Theory — http://flintlib.org/ (version *2.4.1*)
 

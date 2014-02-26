@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -Wall -g3 -ggdb -std=c99 -I./include
-LDFLAGS += -lgmp -lflint
+LDFLAGS += -L/usr/local/lib/ -lflint -lgmp -lmpfr
 
 LDIR = lib
 OBJ_DIR = obj
