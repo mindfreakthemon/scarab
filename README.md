@@ -16,7 +16,7 @@ Building
 The compilation is done using make.
 
 ```
-$ make
+$ make library
 ```
 
 On Windows
@@ -38,7 +38,7 @@ You can compile library under cygwin-x64 on Windows too. Just make sure you have
 
 Usage
 =======
-You can use the library as demonstrated in test.c. The following methods are exposed:
+You can use the library as demonstrated in test.c.
 
 ```
 #include "scarab.h"
