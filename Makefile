@@ -294,6 +294,11 @@ ifeq ($(strip $(foreach prefix,$(NO_LOAD),\
                  $(join ^,library.target.mk)))),)
   include library.target.mk
 endif
+ifeq ($(strip $(foreach prefix,$(NO_LOAD),\
+    $(findstring $(join ^,$(prefix)),\
+                 $(join ^,test.target.mk)))),)
+  include test.target.mk
+endif
 
 quiet_cmd_regen_makefile = ACTION Regenerating $@
 cmd_regen_makefile = /usr/bin/gyp -fmake --ignore-environment "--toplevel-dir=." "--depth=." libscarab.gyp
