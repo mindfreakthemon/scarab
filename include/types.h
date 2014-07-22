@@ -6,6 +6,10 @@
 #include <gmp.h>
 #include "parameters.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** type defs **/
 typedef struct {
 	mpz_t p, alpha;
@@ -33,5 +37,9 @@ void fhe_sk_clear(fhe_sk_t sk);
 void fhe_pk_print(fhe_pk_t pk);
 
 void fhe_sk_print(fhe_sk_t sk);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

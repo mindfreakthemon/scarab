@@ -10,6 +10,10 @@
 #include "parameters.h"
 #include "util.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** main function **/
 
 void fhe_keygen(fhe_pk_t pk, fhe_sk_t sk);
@@ -27,5 +31,9 @@ void fhe_mul(mpz_t res, mpz_t a, mpz_t b, fhe_pk_t pk);
 void fhe_fulladd(mpz_t sum, mpz_t c_out, mpz_t a, mpz_t b, mpz_t c_in, fhe_pk_t pk);
 
 void fhe_halfadd(mpz_t sum, mpz_t c_out, mpz_t a, mpz_t b, fhe_pk_t pk);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
