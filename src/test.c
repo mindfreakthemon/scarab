@@ -33,7 +33,7 @@ main(int argc, char **argv) {
 void
 test_encryt_decrypt() {
 	printf("ENCRYPT/DECRYPT\n");
-	int m0, m1;
+	int i, j, m0, m1;
 	mpz_t c0, c1;
 	
 	mpz_init(c0);
@@ -44,10 +44,10 @@ test_encryt_decrypt() {
 	fhe_pk_init(pk);
 	fhe_sk_init(sk);
 	
-	for (int i = 0; i < KEYRUNS; i++) {
+	for (i = 0; i < KEYRUNS; i++) {
 		fhe_keygen(pk, sk);
 		
-		for (int j = 0; j < RUNS; j++) {
+		for (j = 0; j < RUNS; j++) {
 			fhe_encrypt(c0, pk, 0);
 			m0 = fhe_decrypt(c0, sk);
 			fhe_encrypt(c1, pk, 1);
@@ -71,6 +71,7 @@ test_encryt_decrypt() {
 void
 test_halfadd()
 {
+	int i;
 	printf("HALFADD\n");
 	mpz_t c0, c1;
 	mpz_t sum, carry;
@@ -85,7 +86,7 @@ test_halfadd()
 	fhe_pk_init(pk);
 	fhe_sk_init(sk);
 	
-	for (int i = 0; i < KEYRUNS; i++) {
+	for (i = 0; i < KEYRUNS; i++) {
 		fhe_keygen(pk, sk);
 		
 		fhe_encrypt(c0, pk, 0);
@@ -110,6 +111,7 @@ test_halfadd()
 
 void
 test_fulladd() {
+	int i;
 	printf("FULLADD\n");
 	mpz_t c0, c1;
 	mpz_t sum, carry;
@@ -124,7 +126,7 @@ test_fulladd() {
 	fhe_pk_init(pk);
 	fhe_sk_init(sk);
 	
-	for (int i = 0; i < KEYRUNS; i++) {
+	for (i = 0; i < KEYRUNS; i++) {
 		fhe_keygen(pk, sk);
 		
 		fhe_encrypt(c0, pk, 0);
@@ -153,6 +155,7 @@ test_fulladd() {
 
 void
 test_recrypt() {
+	int i, j;
 	printf("RECRYPT\n");
 	
 	mpz_t c0, c1;
@@ -165,10 +168,10 @@ test_recrypt() {
 	fhe_pk_init(pk);
 	fhe_sk_init(sk);
 	
-	for (int i = 0; i < KEYRUNS; i++) {
+	for (i = 0; i < KEYRUNS; i++) {
 		fhe_keygen(pk, sk);
 		
-		for (int j = 0; j < RUNS; j++) {
+		for (j = 0; j < RUNS; j++) {
 			fhe_encrypt(c0, pk, 0);
 			fhe_encrypt(c1, pk, 1);
 			
@@ -196,7 +199,7 @@ test_homomorphic()
 {
 	printf("HOMOMORPHIC (w/o recrypt)\n");
 
-	int m;
+	int i, j, m;
 	mpz_t c0, c1, temp;
 	
 	mpz_init(c0);
@@ -208,7 +211,7 @@ test_homomorphic()
 	fhe_pk_init(pk);
 	fhe_sk_init(sk);
 	
-	for (int i = 0; i < KEYRUNS; i++) {
+	for (i = 0; i < KEYRUNS; i++) {
 		mpz_t c0, c1;
 		
 		mpz_init(c0);
@@ -222,7 +225,7 @@ test_homomorphic()
 		fhe_keygen(pk, sk);
 		fhe_encrypt(c0, pk, 0);
 		printf("\nadd-chain: ");
-		for (int j = 0; j < RUNS*RUNS; j++) {
+		for (j = 0; j < RUNS*RUNS; j++) {
 			fhe_add(c0, c0, c0, pk);
 			m = fhe_decrypt(c0, sk);
 			printf("%i", m);
@@ -230,7 +233,7 @@ test_homomorphic()
 		}
 		fhe_encrypt(c1, pk, 1);
 		printf("\nmul-chain: ");
-		for (int j = 0; j < RUNS*RUNS; j++) {
+		for (j = 0; j < RUNS*RUNS; j++) {
 			fhe_mul(c1, c1, c1, pk);
 			m = fhe_decrypt(c1, sk);
 			printf("%i", m);
@@ -252,7 +255,7 @@ void
 test_fully_homomorphic() {
 	printf("FULLY HOMOMORPHIC (with recrypt)\n");
 
-	int m;
+	int i, j, m;
 	mpz_t c0, c1, temp;
 
 	mpz_init(c0);
@@ -264,7 +267,7 @@ test_fully_homomorphic() {
 	fhe_pk_init(pk);
 	fhe_sk_init(sk);
 	
-	for (int i = 0; i < KEYRUNS; i++) {
+	for (i = 0; i < KEYRUNS; i++) {
 		mpz_t c0, c1;
 
 		mpz_init(c0);
@@ -279,7 +282,7 @@ test_fully_homomorphic() {
 
 		fhe_encrypt(c0, pk, 0);
 		printf("\nadd-chain: ");
-		for (int j = 0; j < RUNS*RUNS; j++) {
+		for (j = 0; j < RUNS*RUNS; j++) {
 			fhe_add(c0, c0, c0, pk);
 			fhe_recrypt(c0, pk);
 			m = fhe_decrypt(c0, sk);
@@ -288,7 +291,7 @@ test_fully_homomorphic() {
 		}
 		fhe_encrypt(c1, pk, 1);
 		printf("\nmul-chain: ");
-		for (int j = 0; j < RUNS*RUNS; j++) {
+		for (j = 0; j < RUNS*RUNS; j++) {
 			fhe_mul(c1, c1, c1, pk);
 			fhe_recrypt(c1, pk);
 			m = fhe_decrypt(c1, sk);

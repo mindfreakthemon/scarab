@@ -1,4 +1,0 @@
-[submodule "lib/flint2"]
-	path = lib/flint2
-	url = git@github.com:mindfreakthemon/flint2.git
-	branch = trunk

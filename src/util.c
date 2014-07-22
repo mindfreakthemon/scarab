@@ -9,13 +9,14 @@ min(int a, int b)
 void
 fmpz_poly_rand_coeff_even(fmpz_poly_t poly, int n, ulong length, gmp_randstate_t* state)
 {
+	int i;
 	mpz_t c, exp_length_half;
 	mpz_init(c);
 	mpz_init(exp_length_half);
 	
 	mpz_ui_pow_ui(exp_length_half, 2, length - 1);
 	
-	for (int i = 1; i < n; i++) {
+	for (i = 1; i < n; i++) {
 		mpz_urandomb(c, *state, length);
 		mpz_sub(c, c, exp_length_half);
 		mpz_mul_ui(c, c, 2);

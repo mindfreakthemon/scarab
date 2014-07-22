@@ -5,6 +5,7 @@
 
 void
 fhe_keygen(fhe_pk_t pk, fhe_sk_t sk) {
+	int i, j;
 	mpz_t temp;
 	mpz_init(temp);
 
@@ -124,14 +125,14 @@ fhe_keygen(fhe_pk_t pk, fhe_sk_t sk) {
 	mpz_init(r_minus);
 	
 	mpz_fdiv_q_ui(B_i, sk->B, S2);
-	for (int i = 0; i < S2; i++) {
+	for (i = 0; i < S2; i++) {
 		mpz_set(pk->B[i], B_i);
 		fhe_encrypt(pk->c[i], pk, 1);
 	}
 
 	mpz_add(pk->B[0], pk->B[0], sk->B);
 	mpz_submul_ui(pk->B[0], B_i, S2);
-	for (int i = S2; i < S1; i++) {
+	for (i = S2; i < S1; i++) {
 		mpz_urandomm(B_i, randstate, temp); // p is already 2*pk->p !
 		mpz_sub(B_i, B_i, pk->p);
 		mpz_set(pk->B[i], B_i);
@@ -139,11 +140,11 @@ fhe_keygen(fhe_pk_t pk, fhe_sk_t sk) {
 	}
 	
 	// add/sub values randomly
-	for (int i = 0; i < S2; i++) {
+	for (i = 0; i < S2; i++) {
 		mpz_urandomm(r_plus, randstate, pk->p);
 		mpz_neg(r_minus, r_plus);
 		while (1) {
-			int j = rand() % S2;
+			j = rand() % S2;
 			mpz_add(pk->B[j], pk->B[j], r_plus);
 			if (mpz_cmp(pk->B[j], pk->p) > 0) {
 				mpz_sub(r_plus, pk->B[j], pk->p);
@@ -153,7 +154,7 @@ fhe_keygen(fhe_pk_t pk, fhe_sk_t sk) {
 			}
 		}
 		while (1) {
-			int j = rand() % S2;
+			j = rand() % S2;
 			mpz_add(pk->B[j], pk->B[j], r_minus);
 			mpz_neg(temp, pk->p);
 			if (mpz_cmp(pk->B[j], temp) < 0) {
@@ -165,8 +166,8 @@ fhe_keygen(fhe_pk_t pk, fhe_sk_t sk) {
 		}
 	}
 	// shuffle
-	for (int i = 0; i < S1; i++) {
-		int j = rand() % S1;
+	for (i = 0; i < S1; i++) {
+		j = rand() % S1;
 		mpz_swap(pk->B[i], pk->B[j]);
 		mpz_swap(pk->c[i], pk->c[j]);
 	}
@@ -174,7 +175,7 @@ fhe_keygen(fhe_pk_t pk, fhe_sk_t sk) {
 #ifndef NDEBUG
 	// assert that it really sums up to B
 	mpz_set_ui(temp, 0L);
-	for (int i = 0; i < S1; i++) {
+	for (i = 0; i < S1; i++) {
 		if (fhe_decrypt(pk->c[i], sk) == 1) {
 			mpz_add(temp, temp, pk->B[i]);
 		}
@@ -396,6 +397,7 @@ fhe_halfadd(mpz_t sum, mpz_t c_out, mpz_t a, mpz_t b, fhe_pk_t pk) {
 void
 fhe_recrypt(mpz_t c, fhe_pk_t pk)
 {
+	int i, j, k;
 #ifndef NDEBUG
 	assert(S <= T);
 #endif
@@ -406,20 +408,20 @@ fhe_recrypt(mpz_t c, fhe_pk_t pk)
 	mpz_init(temp);
 	mpz_init(p);
 	mpq_init(q);
-	for (int i = 0; i < S1; i++) {
-		for (int j = 0; j < T; j++) {
+	for (i = 0; i < S1; i++) {
+		for (j = 0; j < T; j++) {
 			mpz_init(C[i][j]);
 		}
 	}
-	for (int i = 0; i < T; i++) {
-		for (int j = 0; j < T; j++) {
+	for (i = 0; i < T; i++) {
+		for (j = 0; j < T; j++) {
 			mpz_init_set_ui(H[i][j], 0);
 		}
 	}
 	
 	// Fill C-matrix
 	mpz_mul_ui(p, pk->p, 2);
-	for (int i = 0; i < S1; i++) {
+	for (i = 0; i < S1; i++) {
 		mpz_mul(temp, c, pk->B[i]);
 		mpz_mod(temp, temp, p);
 		mpq_set_num(q, temp);
@@ -432,7 +434,7 @@ fhe_recrypt(mpz_t c, fhe_pk_t pk)
 #endif
 		
 		// base convert and encrypt d
-		for (int j = 0; j < T; j++) {
+		for (j = 0; j < T; j++) {
 #ifdef DEBUG
 			printf(" %i", (int)d);
 #endif
@@ -452,9 +454,9 @@ fhe_recrypt(mpz_t c, fhe_pk_t pk)
 	
 	// Construct Hammingweight in H-matrix
 #define ham(_i,_j) H[_i][_j]
-	for (int j = 0; j < T; j++) {
-		for (int i = 1; i <= S1; i++) {
-			for (int k = (i < (2<<(S-2))) ? i : (2<<(S-2)); k >= 2; k--) {
+	for (j = 0; j < T; j++) {
+		for (i = 1; i <= S1; i++) {
+			for (k = (i < (2<<(S-2))) ? i : (2<<(S-2)); k >= 2; k--) {
 				mpz_addmul(ham(k-1,j), ham(k-2,j), C[i-1][j]);
 				mpz_mod(ham(k-1,j), ham(k-1,j), pk->p);
 			}
@@ -462,15 +464,15 @@ fhe_recrypt(mpz_t c, fhe_pk_t pk)
 			mpz_mod(ham(0,j), ham(0,j), p);
 		}
 	}
-	for (int j = 0; j < T; j++) {
+	for (j = 0; j < T; j++) {
 		mpz_set(ham(2,j), ham(3,j));
 	}
 #ifdef DEBUG
 	PRINT_ham;
 #endif
 #undef ham
-	for (int j = 1; j < T; j++) {
-		for (int i = min(S, j+1)-1; i >= 0; i--) {
+	for (j = 1; j < T; j++) {
+		for (i = min(S, j+1)-1; i >= 0; i--) {
 			mpz_swap(H[i][j], H[j][j-i]);
 		}
 	}
@@ -480,8 +482,8 @@ fhe_recrypt(mpz_t c, fhe_pk_t pk)
 #endif
 	
 	// merge rows 0 and 3; 1 and 4
-	for (int i = 0; i < 2; i++) {
-		for (int j = 0; j < S; j++) {
+	for (i = 0; i < 2; i++) {
+		for (j = 0; j < S; j++) {
 			mpz_set(H[i][i+j+1], H[i+S][i+j+1]);
 		}
 	}
@@ -491,13 +493,13 @@ fhe_recrypt(mpz_t c, fhe_pk_t pk)
 #endif
 	
 	// carry save adder of rows 0,1,2 --> 0,1 (columnwise)
-	for (int j = 0; j < T; j++) {
+	for (j = 0; j < T; j++) {
 		fhe_fulladd(H[3][j], H[4][j], H[0][j], H[1][j], H[2][j], pk);
 	}
 	// leftshift the row with the carry bits
 	mpz_swap(H[0][T-1], H[3][T-1]);
 	fhe_encrypt(H[1][T-1], pk, 0); 
-	for (int j = 0; j < T-1; j++) {
+	for (j = 0; j < T-1; j++) {
 		mpz_swap(H[0][j], H[3][j]);
 		mpz_swap(H[1][j], H[4][j+1]);
 	}	
@@ -510,7 +512,7 @@ fhe_recrypt(mpz_t c, fhe_pk_t pk)
 	// special cases: nothing to do for col T-1, halfadder for T-2
 	// note: carry is in temp, result in last row (4)
 	fhe_halfadd(H[4][T-2], temp, H[0][T-2], H[1][T-2], pk);
-	for (int j = T-3; j >= 0; j--) {
+	for (j = T-3; j >= 0; j--) {
 		fhe_fulladd(H[4][j], temp, H[0][j], H[1][j], temp, pk);
 	}
 	
@@ -525,13 +527,13 @@ fhe_recrypt(mpz_t c, fhe_pk_t pk)
 	mpz_mod(c, c, pk->p);
 	
 	// cleanup
-	for (int i = 0; i < S1; i++) {
-		for (int j = 0; j < T; j++) {
+	for (i = 0; i < S1; i++) {
+		for (j = 0; j < T; j++) {
 			mpz_clear(C[i][j]);
 		}
 	}
-	for (int i = 0; i < T; i++) {
-		for (int j = 0; j < T; j++) {
+	for (i = 0; i < T; i++) {
+		for (j = 0; j < T; j++) {
 			mpz_clear(H[i][j]);
 		}
 	}

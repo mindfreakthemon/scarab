@@ -9,3 +9,7 @@ integer-fhe
 *.ipr
 *.iws
 *.exe
+.vagrant/
+Makefile
+*.Makefile
+*.mk
