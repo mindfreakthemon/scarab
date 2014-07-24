@@ -3,8 +3,7 @@
 
 #define SEED time(NULL)
 
-void
-fhe_keygen(fhe_pk_t pk, fhe_sk_t sk) {
+void fhe_keygen(fhe_pk_t pk, fhe_sk_t sk) {
 	int i, j;
 	mpz_t temp;
 	mpz_init(temp);
@@ -34,20 +33,10 @@ fhe_keygen(fhe_pk_t pk, fhe_sk_t sk) {
 		fmpz_t fmpz_p;
 		fmpz_init2(fmpz_p, fmpz_poly_resultant_bound(G, F)/FLINT_BITS + 2);
 		fmpz_poly_resultant(fmpz_p, G, F);
-		//fmpz_to_mpz(temp, fmpz_p);
+
 		fmpz_get_mpz(temp, fmpz_p);
 		fmpz_clear(fmpz_p);
 	} while (!mpz_probab_prime_p(temp, 25));
-
-#ifdef DEBUG
-	gmp_printf("Choosing Prime p = %Zd\n", temp);
-	printf("Choosing F(x) = ");
-	fmpz_poly_print_pretty(F, "x");
-	printf("\n");
-	printf("Choosing G(x) = ");
-	fmpz_poly_print_pretty(G, "x");
-	printf("\n");
-#endif
 
 	fmpz_t P;
 	fmpz_init(P);
@@ -61,16 +50,8 @@ fhe_keygen(fhe_pk_t pk, fhe_sk_t sk) {
 	fmpz_mod_poly_set_fmpz_poly(G_mod_p, G);
 	
 	fmpz_mod_poly_gcd_euclidean(D_mod_p, F_mod_p, G_mod_p);
-	
-#ifdef DEBUG
-	printf("gcd(G(x), F(x)) = ");
-	fmpz_mod_poly_print(D_mod_p);
-	fmpz_mod_poly_print_pretty(D_mod_p, "x");
-	printf("\n");
-#endif
 
 	fmpz_t *root = (fmpz_t *) fmpz_poly_get_coeff_ptr(D_mod_p, 0);
-//	fmpz_t *root = (fmpz_t *) D_mod_p->coeffs;
 	fmpz_neg(*root, *root);	// root of D = -coeff[0]
 	fmpz_mod(*root, *root, P);
 
@@ -80,33 +61,12 @@ fhe_keygen(fhe_pk_t pk, fhe_sk_t sk) {
 	fmpz_poly_t Z, t;
 	fmpz_poly_init(Z);
 	fmpz_poly_init(t);
-	
-#ifdef DEBUG
-	printf("Executing XGCD with Polynomials G = ");
-	fmpz_poly_print_pretty(G, "x");
-	printf("\n and F = ");
-	fmpz_poly_print_pretty(F, "x");
-	printf("\n");
-#endif
+
 	fmpz_poly_xgcd(r, Z, t, G, F);
-	
-#ifdef DEBUG
-	printf("r    = ");
-	fmpz_print(r);
-	printf("\n");
-	printf("Z(x) = ");
-	fmpz_poly_print_pretty(Z, "x");
-	printf("\n");
-#endif
 
 	fmpz_t fmpz_p;
 	fmpz_init2(fmpz_p, mpz_size(temp));
-	//mpz_to_fmpz(fmpz_p, temp);
 	fmpz_set_mpz(fmpz_p, temp);
-
-#ifndef NDEBUG
-	assert(fmpz_equal(fmpz_p, r));
-#endif
 
 	// build pk
 	mpz_set(pk->p, temp);
@@ -143,6 +103,7 @@ fhe_keygen(fhe_pk_t pk, fhe_sk_t sk) {
 	for (i = 0; i < S2; i++) {
 		mpz_urandomm(r_plus, randstate, pk->p);
 		mpz_neg(r_minus, r_plus);
+
 		while (1) {
 			j = rand() % S2;
 			mpz_add(pk->B[j], pk->B[j], r_plus);
@@ -153,6 +114,7 @@ fhe_keygen(fhe_pk_t pk, fhe_sk_t sk) {
 				break;
 			}
 		}
+
 		while (1) {
 			j = rand() % S2;
 			mpz_add(pk->B[j], pk->B[j], r_minus);
@@ -165,6 +127,7 @@ fhe_keygen(fhe_pk_t pk, fhe_sk_t sk) {
 			}
 		}
 	}
+
 	// shuffle
 	for (i = 0; i < S1; i++) {
 		j = rand() % S1;
@@ -172,17 +135,6 @@ fhe_keygen(fhe_pk_t pk, fhe_sk_t sk) {
 		mpz_swap(pk->c[i], pk->c[j]);
 	}
 	
-#ifndef NDEBUG
-	// assert that it really sums up to B
-	mpz_set_ui(temp, 0L);
-	for (i = 0; i < S1; i++) {
-		if (fhe_decrypt(pk->c[i], sk) == 1) {
-			mpz_add(temp, temp, pk->B[i]);
-		}
-	}
-	assert(mpz_cmp(temp, sk->B) == 0);
-#endif
-
 	// cleanup
 	mpz_clear(B_i);
 	mpz_clear(r_plus);
@@ -201,12 +153,7 @@ fhe_keygen(fhe_pk_t pk, fhe_sk_t sk) {
 	gmp_randclear(randstate);
 }
 
-void
-fhe_encrypt(mpz_t c, fhe_pk_t pk, int m) {
-#ifdef DEBUG
-	printf("ENCRYPT %i\n", m);
-#endif
-
+void fhe_encrypt(mpz_t c, fhe_pk_t pk, int m) {
 	if ((m != 0) && (m != 1)) {
 		fprintf(stderr, "\nm must be either 0 or 1\n");
 		abort();
@@ -229,54 +176,21 @@ fhe_encrypt(mpz_t c, fhe_pk_t pk, int m) {
 
 	fmpz_t *C_0 = (fmpz_t *) fmpz_poly_get_coeff_ptr(C, 0);
 	fmpz_add_ui(*C_0, *C_0, m);
-	
-#ifdef DEBUG
-	printf("C(x) = ");
-	fmpz_poly_print_pretty(C, "x");
-	printf("\n");
-	printf("alpha = ");
-	fmpz_print(alpha);
-	printf("\n");
-	printf("C(alpha) = ");
-	fmpz_print(fmpz_c);
-	printf("\n");
-#endif
-	
-	fmpz_poly_evaluate_fmpz(fmpz_c, C, alpha);
-	
-#ifdef DEBUG
-	printf("C(x) = ");
-	fmpz_poly_print_pretty(C, "x");
-	printf("\n");
-	printf("C(alpha) = ");
-	fmpz_print(fmpz_c);
-	printf("\n");
-#endif
 
-	//fmpz_to_mpz(c, fmpz_c);
+	fmpz_poly_evaluate_fmpz(fmpz_c, C, alpha);
+
 	fmpz_get_mpz(c, fmpz_c);
 	fmpz_clear(fmpz_c);
 
 	mpz_mod(c, c, pk->p);
-	
-	
-#ifdef DEBUG
-	gmp_printf("c = %Zd\n", c);
-#endif
-	
+
 	// cleanup
 	fmpz_poly_clear(C);
 	fmpz_clear(alpha);
 	gmp_randclear(randstate);
 }
 
-
-int
-fhe_decrypt(mpz_t c, fhe_sk_t sk) {
-#ifdef DEBUG
-	gmp_printf("DECRYPT %Zd\n", c);
-#endif
-
+int fhe_decrypt(mpz_t c, fhe_sk_t sk) {
 	int m;
 	
 	mpz_t temp, q, r;
@@ -301,11 +215,7 @@ fhe_decrypt(mpz_t c, fhe_sk_t sk) {
 	if (mpq_cmp(n, one_half) > 0) { // n > 1/2
 		mpz_add_ui(q, q, 1);
 	}
-	
-#ifdef DEBUG
-	gmp_printf("q: %Zd\n", q);
-#endif
-	
+
 	mpz_add(temp, c, q);	
 	mpz_mod_ui(temp, temp, 2);
 	
@@ -322,28 +232,22 @@ fhe_decrypt(mpz_t c, fhe_sk_t sk) {
 	return m;
 }
 
-void
-fhe_add(mpz_t res, mpz_t a, mpz_t b, fhe_pk_t pk) {
+void fhe_add(mpz_t res, mpz_t a, mpz_t b, fhe_pk_t pk) {
 	mpz_add(res, a, b);
 	mpz_mod(res, res, pk->p);
-	fhe_recrypt(res, pk);
 }
 
 
-void
-fhe_mul(mpz_t res, mpz_t a, mpz_t b, fhe_pk_t pk)  {
+void fhe_mul(mpz_t res, mpz_t a, mpz_t b, fhe_pk_t pk)  {
 	mpz_mul(res, a, b);
 	mpz_mod(res, res, pk->p);
-	fhe_recrypt(res, pk);
 }
 
 
-void
-fhe_fulladd(mpz_t sum, mpz_t c_out, mpz_t a, mpz_t b, mpz_t c_in, fhe_pk_t pk)
-{
+void fhe_fulladd(mpz_t sum, mpz_t c_out, mpz_t a, mpz_t b, mpz_t c_in, fhe_pk_t pk) {
 	mpz_t temp;
 	mpz_init(temp);
-	
+
 	mpz_add(temp, a, b);
 	mpz_add(temp, temp, c_in);
 	mpz_mod(sum, temp, pk->p);
@@ -357,50 +261,14 @@ fhe_fulladd(mpz_t sum, mpz_t c_out, mpz_t a, mpz_t b, mpz_t c_in, fhe_pk_t pk)
 }
 
 
-void
-fhe_halfadd(mpz_t sum, mpz_t c_out, mpz_t a, mpz_t b, fhe_pk_t pk) {
-	mpz_add(sum, a, b);
-	mpz_mod(sum, sum, pk->p);
-	
-	mpz_mul(c_out, a, b);
-	mpz_mod(c_out, c_out, pk->p);
+void fhe_halfadd(mpz_t sum, mpz_t c_out, mpz_t a, mpz_t b, fhe_pk_t pk) {
+	fhe_add(sum, a, b, pk);
+	fhe_mul(c_out, a, b, pk);
 }
 
 
-#define PRINT_C												\
-	printf("(Zeile %i): C-Matrix\n\t", __LINE__);			\
-	for (int __i = 0; __i < S1; __i++) {					\
-		for (int __j = 0; __j < T; __j++) {					\
-			printf("%i ", fhe_decrypt(C[__i][__j], sk));	\
-		}													\
-		printf("\n\t");										\
-	};  printf("\n")
-
-#define PRINT_H												\
-	printf("(Zeile %i): H-Matrix\n\t", __LINE__);			\
-	for (int __i = 0; __i < T; __i++) {						\
-		for (int __j = 0; __j < T; __j++) {					\
-			printf("%i ", fhe_decrypt(H[__i][__j], sk));	\
-		}													\
-		printf("\n\t");										\
-	};  printf("\n")
-
-#define PRINT_ham											\
-	printf("(Zeile %i): ham-Matrix\n\t", __LINE__);			\
-	for (int __i = 0; __i < T; __i++) {						\
-		for (int __j = 0; __j < T; __j++) {					\
-			printf("%i ", fhe_decrypt(ham(__i,__j), sk));	\
-		}													\
-		printf("\n\t");										\
-	};  printf("\n")
-
-void
-fhe_recrypt(mpz_t c, fhe_pk_t pk)
-{
+void fhe_recrypt(mpz_t c, fhe_pk_t pk) {
 	int i, j, k;
-#ifndef NDEBUG
-	assert(S <= T);
-#endif
 
 	mpz_t C[S1][T], H[T][T], temp, p;
 	mpq_t q;
@@ -408,11 +276,13 @@ fhe_recrypt(mpz_t c, fhe_pk_t pk)
 	mpz_init(temp);
 	mpz_init(p);
 	mpq_init(q);
+
 	for (i = 0; i < S1; i++) {
 		for (j = 0; j < T; j++) {
 			mpz_init(C[i][j]);
 		}
 	}
+
 	for (i = 0; i < T; i++) {
 		for (j = 0; j < T; j++) {
 			mpz_init_set_ui(H[i][j], 0);
@@ -428,59 +298,39 @@ fhe_recrypt(mpz_t c, fhe_pk_t pk)
 		mpq_set_den(q, pk->p);
 		mpq_canonicalize(q);
 		double d = mpq_get_d(q);
-		
-#ifdef DEBUG
-		printf("\t%i: %1.5f\t\t[", i, d);
-#endif
-		
+
 		// base convert and encrypt d
 		for (j = 0; j < T; j++) {
-#ifdef DEBUG
-			printf(" %i", (int)d);
-#endif
-			fhe_encrypt(C[i][j], pk, (int)d);
+			fhe_encrypt(C[i][j], pk, (int) d);
 			mpz_mul(C[i][j], C[i][j], pk->c[i]);
 			mpz_mod(C[i][j], C[i][j], pk->p);
-			d -= (int)d;
+			d -= (int) d;
 			d *= 2;
 		}
-#ifdef DEBUG
-		printf(" ]\n");
-#endif
 	}
-#ifdef DEBUG
-	PRINT_C;
-#endif
 	
 	// Construct Hammingweight in H-matrix
-#define ham(_i,_j) H[_i][_j]
 	for (j = 0; j < T; j++) {
 		for (i = 1; i <= S1; i++) {
 			for (k = (i < (2<<(S-2))) ? i : (2<<(S-2)); k >= 2; k--) {
-				mpz_addmul(ham(k-1,j), ham(k-2,j), C[i-1][j]);
-				mpz_mod(ham(k-1,j), ham(k-1,j), pk->p);
+				mpz_addmul(H[k-1][j], H[k-2][j], C[i-1][j]);
+				mpz_mod(H[k-1][j], H[k-1][j], pk->p);
 			}
-			mpz_add(ham(0,j), ham(0,j), C[i-1][j]);
-			mpz_mod(ham(0,j), ham(0,j), p);
+			mpz_add(H[0][j], H[0][j], C[i-1][j]);
+			mpz_mod(H[0][j], H[0][j], p);
 		}
 	}
+
 	for (j = 0; j < T; j++) {
-		mpz_set(ham(2,j), ham(3,j));
+		mpz_set(H[2][j], H[3][j]);
 	}
-#ifdef DEBUG
-	PRINT_ham;
-#endif
-#undef ham
+
 	for (j = 1; j < T; j++) {
 		for (i = min(S, j+1)-1; i >= 0; i--) {
 			mpz_swap(H[i][j], H[j][j-i]);
 		}
 	}
-	
-#ifdef DEBUG
-	PRINT_H;
-#endif
-	
+
 	// merge rows 0 and 3; 1 and 4
 	for (i = 0; i < 2; i++) {
 		for (j = 0; j < S; j++) {
@@ -488,25 +338,18 @@ fhe_recrypt(mpz_t c, fhe_pk_t pk)
 		}
 	}
 	
-#ifdef DEBUG
-	PRINT_H;
-#endif
-	
 	// carry save adder of rows 0,1,2 --> 0,1 (columnwise)
 	for (j = 0; j < T; j++) {
 		fhe_fulladd(H[3][j], H[4][j], H[0][j], H[1][j], H[2][j], pk);
 	}
+
 	// leftshift the row with the carry bits
 	mpz_swap(H[0][T-1], H[3][T-1]);
-	fhe_encrypt(H[1][T-1], pk, 0); 
+	fhe_encrypt(H[1][T-1], pk, 0);
 	for (j = 0; j < T-1; j++) {
 		mpz_swap(H[0][j], H[3][j]);
 		mpz_swap(H[1][j], H[4][j+1]);
-	}	
-	
-#ifdef DEBUG
-	PRINT_H;
-#endif
+	}
 
 	// ripple-carry-add rows 0 and 1 --> 0 (LSB at T-1)
 	// special cases: nothing to do for col T-1, halfadder for T-2
@@ -515,11 +358,7 @@ fhe_recrypt(mpz_t c, fhe_pk_t pk)
 	for (j = T-3; j >= 0; j--) {
 		fhe_fulladd(H[4][j], temp, H[0][j], H[1][j], temp, pk);
 	}
-	
-#ifdef DEBUG
-	PRINT_H;
-#endif	
-	
+
 	// round to nearest integer
 	mpz_add(temp, H[4][0], H[4][1]);
 	mpz_mod_ui(c, c, 2);
@@ -532,6 +371,7 @@ fhe_recrypt(mpz_t c, fhe_pk_t pk)
 			mpz_clear(C[i][j]);
 		}
 	}
+
 	for (i = 0; i < T; i++) {
 		for (j = 0; j < T; j++) {
 			mpz_clear(H[i][j]);

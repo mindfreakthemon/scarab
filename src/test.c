@@ -18,8 +18,7 @@
 	fhe_add(temp, __a, __b, pk);					\
 	assert(fhe_decrypt(temp, sk) == __check);
 
-int
-main(int argc, char **argv) {
+int main(int argc, char **argv) {
 	test_fully_homomorphic();
 	test_homomorphic();
 	test_recrypt();
@@ -30,8 +29,7 @@ main(int argc, char **argv) {
 	return 0;
 }
 
-void
-test_encryt_decrypt() {
+void test_encryt_decrypt() {
 	printf("ENCRYPT/DECRYPT\n");
 	int i, j, m0, m1;
 	mpz_t c0, c1;
@@ -68,8 +66,7 @@ test_encryt_decrypt() {
 }
 
 
-void
-test_halfadd()
+void test_halfadd()
 {
 	int i;
 	printf("HALFADD\n");
@@ -109,8 +106,7 @@ test_halfadd()
 }
 
 
-void
-test_fulladd() {
+void test_fulladd() {
 	int i;
 	printf("FULLADD\n");
 	mpz_t c0, c1;
@@ -153,8 +149,7 @@ test_fulladd() {
 }
 
 
-void
-test_recrypt() {
+void test_recrypt() {
 	int i, j;
 	printf("RECRYPT\n");
 	
@@ -194,8 +189,7 @@ test_recrypt() {
 }
 
 
-void
-test_homomorphic()
+void test_homomorphic()
 {
 	printf("HOMOMORPHIC (w/o recrypt)\n");
 
@@ -251,8 +245,7 @@ test_homomorphic()
 	printf("PASSED.\n");
 }
 
-void
-test_fully_homomorphic() {
+void test_fully_homomorphic() {
 	printf("FULLY HOMOMORPHIC (with recrypt)\n");
 
 	int i, j, m;

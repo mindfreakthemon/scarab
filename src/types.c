@@ -2,8 +2,7 @@
 
 /** memory management **/
 
-void fhe_pk_init(fhe_pk_t pk)
-{
+void fhe_pk_init(fhe_pk_t pk) {
 	int i;
 	mpz_init(pk->p);
 	mpz_init(pk->alpha);
@@ -14,8 +13,7 @@ void fhe_pk_init(fhe_pk_t pk)
 }
 
 
-void fhe_pk_clear(fhe_pk_t pk)
-{
+void fhe_pk_clear(fhe_pk_t pk) {
 	int i;
 	mpz_clear(pk->p);
 	mpz_clear(pk->alpha);
@@ -26,23 +24,20 @@ void fhe_pk_clear(fhe_pk_t pk)
 }
 
 
-void fhe_sk_init(fhe_sk_t sk)
-{
+void fhe_sk_init(fhe_sk_t sk) {
 	mpz_init(sk->p);
 	mpz_init(sk->B);
 }
 
 
-void fhe_sk_clear(fhe_sk_t sk)
-{
+void fhe_sk_clear(fhe_sk_t sk) {
 	mpz_clear(sk->p);
 	mpz_clear(sk->B);
 }
 
 /** output **/
 
-void fhe_pk_print(fhe_pk_t pk)
-{
+void fhe_pk_print(fhe_pk_t pk) {
 	int i;
 	printf("public key:\n");
 	gmp_printf("\tp  =\t%Zd\n", pk->p);
@@ -53,8 +48,7 @@ void fhe_pk_print(fhe_pk_t pk)
 	}
 }
 
-void fhe_pk_print_mathematica(fhe_pk_t pk)
-{
+void fhe_pk_print_mathematica(fhe_pk_t pk) {
 	int i;
 	printf("public key:\n");
 	gmp_printf("{%Zd, %Zd, %i, %i, {{", pk->p, pk->alpha, S1, S2);
@@ -73,15 +67,13 @@ void fhe_pk_print_mathematica(fhe_pk_t pk)
 	printf("}}}\n");
 }
 
-void fhe_sk_print(fhe_sk_t sk)
-{
+void fhe_sk_print(fhe_sk_t sk) {
 	printf("secret key:\n");
 	gmp_printf("\tp =\t%Zd\n", sk->p);
 	gmp_printf("\tB =\t%Zd\n", sk->B);
 }
 
-void fhe_sk_print_mathematica(fhe_sk_t sk)
-{
+void fhe_sk_print_mathematica(fhe_sk_t sk) {
 	printf("secret key:\n");
 	gmp_printf("{%Zd, %Zd}\n", sk->p, sk->B);
 }
