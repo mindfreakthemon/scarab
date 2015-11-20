@@ -12,7 +12,7 @@ void fhe_keygen(fhe_pk_t pk, fhe_sk_t sk) {
 	fmpz_poly_init(F);
 
 	// set f = x^n + 1
-	fmpz_poly_set_coeff_ui(F, N, 1);
+	fmpz_poly_set_coeff_ui(F, SCARAB_N, 1);
 	fmpz_poly_set_coeff_ui(F, 0, 1);
 	
 	fmpz_poly_t G;
@@ -23,7 +23,7 @@ void fhe_keygen(fhe_pk_t pk, fhe_sk_t sk) {
 	gmp_randseed_ui(randstate, SEED);
 
 	do {
-		fmpz_poly_rand_coeff_even(G, N, LOG_NU, &randstate);
+		fmpz_poly_rand_coeff_even(G, SCARAB_N, LOG_NU, &randstate);
 
 		//fmpz_poly_set_coeff_ui(G, 0, 1);
 		fmpz_t *G_0 = (fmpz_t *) fmpz_poly_get_coeff_ptr(G, 0);
@@ -172,7 +172,7 @@ void fhe_encrypt(mpz_t c, fhe_pk_t pk, int m) {
 	gmp_randinit_default(randstate);
 	gmp_randseed_ui(randstate, SEED);
 	
-	fmpz_poly_rand_coeff_even(C, N, 2, &randstate);
+	fmpz_poly_rand_coeff_even(C, SCARAB_N, 2, &randstate);
 
 	fmpz_t *C_0 = (fmpz_t *) fmpz_poly_get_coeff_ptr(C, 0);
 	fmpz_add_ui(*C_0, *C_0, m);
@@ -270,7 +270,7 @@ void fhe_halfadd(mpz_t sum, mpz_t c_out, mpz_t a, mpz_t b, fhe_pk_t pk) {
 void fhe_recrypt(mpz_t c, fhe_pk_t pk) {
 	int i, j, k;
 
-	mpz_t C[S1][T], H[T][T], temp, p;
+	mpz_t C[S1][SCARAB_T], H[SCARAB_T][SCARAB_T], temp, p;
 	mpq_t q;
 	
 	mpz_init(temp);
@@ -278,13 +278,13 @@ void fhe_recrypt(mpz_t c, fhe_pk_t pk) {
 	mpq_init(q);
 
 	for (i = 0; i < S1; i++) {
-		for (j = 0; j < T; j++) {
+		for (j = 0; j < SCARAB_T; j++) {
 			mpz_init(C[i][j]);
 		}
 	}
 
-	for (i = 0; i < T; i++) {
-		for (j = 0; j < T; j++) {
+	for (i = 0; i < SCARAB_T; i++) {
+		for (j = 0; j < SCARAB_T; j++) {
 			mpz_init_set_ui(H[i][j], 0);
 		}
 	}
@@ -300,7 +300,7 @@ void fhe_recrypt(mpz_t c, fhe_pk_t pk) {
 		double d = mpq_get_d(q);
 
 		// base convert and encrypt d
-		for (j = 0; j < T; j++) {
+		for (j = 0; j < SCARAB_T; j++) {
 			fhe_encrypt(C[i][j], pk, (int) d);
 			mpz_mul(C[i][j], C[i][j], pk->c[i]);
 			mpz_mod(C[i][j], C[i][j], pk->p);
@@ -310,9 +310,9 @@ void fhe_recrypt(mpz_t c, fhe_pk_t pk) {
 	}
 	
 	// Construct Hammingweight in H-matrix
-	for (j = 0; j < T; j++) {
+	for (j = 0; j < SCARAB_T; j++) {
 		for (i = 1; i <= S1; i++) {
-			for (k = (i < (2<<(S-2))) ? i : (2<<(S-2)); k >= 2; k--) {
+			for (k = (i < (2<<(SCARAB_S-2))) ? i : (2<<(SCARAB_S-2)); k >= 2; k--) {
 				mpz_addmul(H[k-1][j], H[k-2][j], C[i-1][j]);
 				mpz_mod(H[k-1][j], H[k-1][j], pk->p);
 			}
@@ -321,41 +321,41 @@ void fhe_recrypt(mpz_t c, fhe_pk_t pk) {
 		}
 	}
 
-	for (j = 0; j < T; j++) {
+	for (j = 0; j < SCARAB_T; j++) {
 		mpz_set(H[2][j], H[3][j]);
 	}
 
-	for (j = 1; j < T; j++) {
-		for (i = min(S, j+1)-1; i >= 0; i--) {
+	for (j = 1; j < SCARAB_T; j++) {
+		for (i = min(SCARAB_S, j+1)-1; i >= 0; i--) {
 			mpz_swap(H[i][j], H[j][j-i]);
 		}
 	}
 
 	// merge rows 0 and 3; 1 and 4
 	for (i = 0; i < 2; i++) {
-		for (j = 0; j < S; j++) {
-			mpz_set(H[i][i+j+1], H[i+S][i+j+1]);
+		for (j = 0; j < SCARAB_S; j++) {
+			mpz_set(H[i][i+j+1], H[i+SCARAB_S][i+j+1]);
 		}
 	}
 	
 	// carry save adder of rows 0,1,2 --> 0,1 (columnwise)
-	for (j = 0; j < T; j++) {
+	for (j = 0; j < SCARAB_T; j++) {
 		fhe_fulladd(H[3][j], H[4][j], H[0][j], H[1][j], H[2][j], pk);
 	}
 
 	// leftshift the row with the carry bits
-	mpz_swap(H[0][T-1], H[3][T-1]);
-	fhe_encrypt(H[1][T-1], pk, 0);
-	for (j = 0; j < T-1; j++) {
+	mpz_swap(H[0][SCARAB_T-1], H[3][SCARAB_T-1]);
+	fhe_encrypt(H[1][SCARAB_T-1], pk, 0);
+	for (j = 0; j < SCARAB_T-1; j++) {
 		mpz_swap(H[0][j], H[3][j]);
 		mpz_swap(H[1][j], H[4][j+1]);
 	}
 
-	// ripple-carry-add rows 0 and 1 --> 0 (LSB at T-1)
-	// special cases: nothing to do for col T-1, halfadder for T-2
+	// ripple-carry-add rows 0 and 1 --> 0 (LSB at SCARAB_T-1)
+	// special cases: nothing to do for col SCARAB_T-1, halfadder for SCARAB_T-2
 	// note: carry is in temp, result in last row (4)
-	fhe_halfadd(H[4][T-2], temp, H[0][T-2], H[1][T-2], pk);
-	for (j = T-3; j >= 0; j--) {
+	fhe_halfadd(H[4][SCARAB_T-2], temp, H[0][SCARAB_T-2], H[1][SCARAB_T-2], pk);
+	for (j = SCARAB_T-3; j >= 0; j--) {
 		fhe_fulladd(H[4][j], temp, H[0][j], H[1][j], temp, pk);
 	}
 
@@ -367,13 +367,13 @@ void fhe_recrypt(mpz_t c, fhe_pk_t pk) {
 	
 	// cleanup
 	for (i = 0; i < S1; i++) {
-		for (j = 0; j < T; j++) {
+		for (j = 0; j < SCARAB_T; j++) {
 			mpz_clear(C[i][j]);
 		}
 	}
 
-	for (i = 0; i < T; i++) {
-		for (j = 0; j < T; j++) {
+	for (i = 0; i < SCARAB_T; i++) {
+		for (j = 0; j < SCARAB_T; j++) {
 			mpz_clear(H[i][j]);
 		}
 	}
