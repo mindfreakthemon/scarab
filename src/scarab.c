@@ -158,7 +158,7 @@ void fhe_encrypt(mpz_t c, fhe_pk_t pk, int m) {
 		fprintf(stderr, "\nm must be either 0 or 1\n");
 		abort();
 	}
-	
+
 	fmpz_poly_t C;
 	fmpz_t fmpz_c, alpha;
 	
@@ -170,7 +170,7 @@ void fhe_encrypt(mpz_t c, fhe_pk_t pk, int m) {
 
 	gmp_randstate_t randstate;
 	gmp_randinit_default(randstate);
-	gmp_randseed_ui(randstate, SEED);
+	gmp_randseed_ui(randstate, SEED * 1000 + rand());
 	
 	fmpz_poly_rand_coeff_even(C, SCARAB_N, 2, &randstate);
 
