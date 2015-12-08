@@ -161,7 +161,7 @@ void fhe_encrypt(mpz_t c, fhe_pk_t pk, int m) {
 
 	fmpz_poly_t C;
 	fmpz_t fmpz_c, alpha;
-	
+
 	fmpz_poly_init(C);
 	fmpz_init2(fmpz_c, 1000000);
 
@@ -170,12 +170,15 @@ void fhe_encrypt(mpz_t c, fhe_pk_t pk, int m) {
 
 	gmp_randstate_t randstate;
 	gmp_randinit_default(randstate);
-	gmp_randseed_ui(randstate, SEED * 1000 + rand());
-	
-	fmpz_poly_rand_coeff_even(C, SCARAB_N, 2, &randstate);
+	gmp_randseed_ui(randstate, SEED + 1000 * rand());
 
-	fmpz_t *C_0 = (fmpz_t *) fmpz_poly_get_coeff_ptr(C, 0);
-	fmpz_add_ui(*C_0, *C_0, m);
+	fmpz_poly_rand_coeff_even(C, SCARAB_N, 2, &randstate);
+	fmpz_t *C_0 = fmpz_poly_get_coeff_ptr(C, 0);
+    if (*C_0) {
+	    fmpz_add_ui(*C_0, *C_0, m);
+	} else {
+	    fmpz_poly_set_coeff_ui(C, 0, m);
+	}
 
 	fmpz_poly_evaluate_fmpz(fmpz_c, C, alpha);
 
@@ -187,6 +190,7 @@ void fhe_encrypt(mpz_t c, fhe_pk_t pk, int m) {
 	// cleanup
 	fmpz_poly_clear(C);
 	fmpz_clear(alpha);
+	fmpz_clear(fmpz_c);
 	gmp_randclear(randstate);
 }
 
