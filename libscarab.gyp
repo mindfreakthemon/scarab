@@ -1,13 +1,13 @@
 {
 	"variables": {
-		"library%": "static_library"
+		"library": "static_library"
 	},
 	"target_defaults": {
 		"include_dirs": [
-			"include"
+			"include",
+			".."
 		],
 		"libraries": [
-			"-lflint",
 			"-lgmp",
 			"-lmpfr"
 		]
@@ -25,7 +25,8 @@
 			],
 			"direct_dependent_settings": {
 				"include_dirs": [
-					"include"
+					"include",
+                    ".."
 				]
 			}
 		},
