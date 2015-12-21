@@ -1,11 +1,13 @@
 {
 	"variables": {
+        "target_arch%": "x64",
 		"library": "static_library"
 	},
 	"target_defaults": {
 		"include_dirs": [
+			"..",
 			"include",
-			".."
+			"../flint/config/<(OS)/<(target_arch)"
 		],
 		"libraries": [
 			"-lgmp",
@@ -25,8 +27,9 @@
 			],
 			"direct_dependent_settings": {
 				"include_dirs": [
-					"include",
-                    ".."
+					"..",
+                    "include",
+                    "../flint/config/<(OS)/<(target_arch)"
 				]
 			}
 		},
