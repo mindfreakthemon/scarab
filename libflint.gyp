@@ -4,43 +4,26 @@
 		"library": "static_library"
 	},
 	"target_defaults": {
+		"defines": [],
 		"include_dirs": [
 			".",
-			"include",
 			"config/<(OS)/<(target_arch)"
-		],
-		"libraries": [
-			"-lgmp",
-			"-lmpfr"
 		]
 	},
 	"targets": [
 		{
-			"target_name": "scarab",
+			"target_name": "flint",
 			"product_prefix": "lib",
 			"type": "<(library)",
 			"sources": [
-				"src/scarab.c",
-				"src/types.c",
-				"src/util.c"
+				"<!@(ls -1 -R flint/**/*.c)"
 			],
 			"direct_dependent_settings": {
 				"include_dirs": [
 					".",
-					"include",
 					"config/<(OS)/<(target_arch)"
 				]
 			}
-		},
-		{
-			"target_name": "test",
-			"type": "executable",
-			"sources": [
-				"src/test.c"
-			],
-			"dependencies": [
-				"scarab"
-			]
 		}
 	]
 }
