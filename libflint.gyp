@@ -6,7 +6,7 @@
 	"target_defaults": {
 		"defines": [],
 		"include_dirs": [
-			".",
+			"flint",
 			"config/<(OS)/<(target_arch)"
 		]
 	},
@@ -20,7 +20,7 @@
 			],
 			"direct_dependent_settings": {
 				"include_dirs": [
-					".",
+					"flint",
 					"config/<(OS)/<(target_arch)"
 				]
 			}
