@@ -4,7 +4,6 @@
 		"library": "static_library"
 	},
 	"target_defaults": {
-		"defines": [],
 		"include_dirs": [
 			"flint",
 			"config/<(OS)/<(target_arch)"
@@ -16,14 +15,8 @@
 			"product_prefix": "lib",
 			"type": "<(library)",
 			"sources": [
-				"<!@(ls -1 -R flint/**/*.c)"
-			],
-			"direct_dependent_settings": {
-				"include_dirs": [
-					"flint",
-					"config/<(OS)/<(target_arch)"
-				]
-			}
+				"<!@(find flint -name \\*.c -not \\( -path \"flint/doc/*\" -or -path \"flint/*/profile/*\" -or -path \"flint/*/test/*\" \\) -print)"
+			]
 		}
 	]
 }

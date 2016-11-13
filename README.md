@@ -16,6 +16,7 @@ Building
 The compilation is done using make.
 
 ```
+$ gyp --depth=. --no-duplicate-basename-check
 $ make library
 ```
 
