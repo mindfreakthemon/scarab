@@ -8,7 +8,8 @@ dependencies:
     - gyp
   pre:
     - if [[ ! -e gyp/setup.py ]]; then git clone https://chromium.googlesource.com/external/gyp; fi
-    - python gyp/setup.py install
+    - sudo python setup.py install:
+        pwd: gyp
 
 checkout:
   post:
