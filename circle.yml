@@ -1,6 +1,4 @@
 machine:
-  python:
-   version: 2.7.5
   pre:
     - sudo apt-get install libgmp-dev libmpfr-dev libmpfr4 gcc g++ automake autoconf
 
@@ -9,7 +7,7 @@ dependencies:
     - gyp
   pre:
     - if [[ ! -e gyp/setup.py ]]; then git clone https://chromium.googlesource.com/external/gyp; fi
-    - python install gyp/setup.py
+    - python gyp/setup.py
 
 checkout:
   post:
