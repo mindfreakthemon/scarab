@@ -2,26 +2,35 @@ Scarab
 ======
 
 FHE Library for encrypting/decrypting bits and performing add/mul (and/xor) over encrypted data.
-Port/fort of the existing [library](https://github.com/hcrypt-project/libScarab) by Henning Perl
+Port/fork of the existing [library](https://github.com/hcrypt-project/libScarab) by Henning Perl
 
 Dependencies
 ======
 * GMP: The GNU Multiple Precision Arithmetic Library — https://gmplib.org/ (or MPIR in GMP mode)
 * MPIR: The GNU Multiple Precision Integers and Rationals — http://mpir.org/ (or GMP)
 * MPFR: The GNU Multiple Precision Floating-Point Reliably — http://www.mpfr.org/ (required by FLINT)
-* FLINT: Fast Library for Number Theory — http://flintlib.org/ (version *2.4.1*)
+* FLINT: Fast Library for Number Theory — http://flintlib.org/ (version *2.4.1*, included)
 
 Building
 ======
-The compilation is done using make.
+The compilation is done using GYP and make.
 
 ```
 $ gyp --depth=. --no-duplicate-basename-check
 $ make library
 ```
 
-On Windows
+Debian-based
 ------
+```sudo apt-get install libgmp-dev libmpfr-dev libmpfr4 gcc g++ automake autoconf```.
+
+RHEL-based
+------
+```sudo yum install gcc gcc-c++ automake autoconf```.
+GMP and MPFR versions in the repo are outdated so you should just compile them from sources. Look for download links below.
+
+Windows
+-------
 
 You can compile library under cygwin-x64 on Windows too. Just make sure you have installed all the following libs:
 * gcc-core

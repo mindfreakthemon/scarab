@@ -1,0 +1,24 @@
+machine:
+  python:
+   version: 2.7.5
+  pre:
+    - sudo apt-get install libgmp-dev libmpfr-dev libmpfr4 gcc g++ automake autoconf
+
+dependencies:
+  cache_directories:
+    - gyp
+  pre:
+    - if [[ ! -e gyp/setup.py ]]; then git clone https://chromium.googlesource.com/external/gyp; fi
+    - python install gyp/setup.py
+
+checkout:
+  post:
+    - git submodule sync
+    - git submodule update --init
+
+test:
+  pre:
+    - gyp --depth=. --no-duplicate-basename-check
+    - make test
+  override:
+    - out/Default/test
