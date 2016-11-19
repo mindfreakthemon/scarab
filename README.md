@@ -4,7 +4,7 @@ Scarab
 FHE Library for encrypting/decrypting bits and performing add/mul (and/xor) over encrypted data.
 Port/fork of the existing [library](https://github.com/hcrypt-project/libScarab) by Henning Perl
 
-[![CircleCI](https://circleci.com/gh/mindfreakthemon/scarab.svg?style=svg)](https://circleci.com/gh/mindfreakthemon/scarab)
+[![CircleCI](https://circleci.com/gh/mindfreakthemon/scarab.png)](https://circleci.com/gh/mindfreakthemon/scarab)
 
 Dependencies
 ======
