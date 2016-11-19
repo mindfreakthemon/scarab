@@ -1,15 +1,13 @@
 machine:
   pre:
     - sudo apt-get install libgmp-dev libmpfr-dev libmpfr4 gcc g++ automake autoconf
-    - sudo pip install --upgrade setuptools
 
 dependencies:
   cache_directories:
     - gyp
   pre:
     - if [[ ! -e gyp/setup.py ]]; then git clone https://chromium.googlesource.com/external/gyp; fi
-    - sudo python setup.py install:
-        pwd: gyp
+    - sudo python gyp/setup.py install
 
 checkout:
   post:
