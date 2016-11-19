@@ -1,6 +1,7 @@
 machine:
   pre:
     - sudo apt-get install libgmp-dev libmpfr-dev libmpfr4 gcc g++ automake autoconf
+    - sudo pip install --upgrade setuptools
 
 dependencies:
   cache_directories:
