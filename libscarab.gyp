@@ -10,7 +10,7 @@
 			"config/<(OS)/<(target_arch)"
 		],
 		"libraries": [
-			"-lflint-2.5.2",
+			"-lflint",
 			"-lgmp",
 			"-lmpfr"
 		]
