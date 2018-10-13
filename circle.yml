@@ -1,23 +1,10 @@
 machine:
   pre:
-    - sudo apt-get install libgmp-dev libmpfr-dev libmpfr4 gcc g++ automake autoconf
-
-dependencies:
-  cache_directories:
-    - gyp
-  pre:
-    - if [[ ! -e gyp/setup.py ]]; then git clone https://chromium.googlesource.com/external/gyp; fi
-    - sudo python setup.py install:
-        pwd: gyp
-
-checkout:
-  post:
-    - git submodule sync
-    - git submodule update --init
+    - sudo apt-get install libgmp-dev libmpfr-dev gyp libflint-2.5.2 gcc g++ automake autoconf
 
 test:
   pre:
     - gyp --depth=. --no-duplicate-basename-check
-    - make test
+    - make
   override:
     - out/Default/test
