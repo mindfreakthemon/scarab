@@ -2,34 +2,37 @@ Scarab
 ======
 
 FHE Library for encrypting/decrypting bits and performing add/mul (and/xor) over encrypted data.
-Port/fork of the existing [library](https://github.com/hcrypt-project/libScarab) by Henning Perl
-
-[![CircleCI](https://circleci.com/gh/mindfreakthemon/scarab.svg?style=shield&circle-token=25fb2f824128e9da50ae5d8ee333a4cad37d9392)](https://circleci.com/gh/mindfreakthemon/scarab)
+Port/fork of the existing [library](https://github.com/hcrypt-project/libScarab) by Henning Perl.
 
 Dependencies
 ======
 * GMP: The GNU Multiple Precision Arithmetic Library — https://gmplib.org/ (or MPIR in GMP mode)
 * MPIR: The GNU Multiple Precision Integers and Rationals — http://mpir.org/ (or GMP)
 * MPFR: The GNU Multiple Precision Floating-Point Reliably — http://www.mpfr.org/ (required by FLINT)
-* FLINT: Fast Library for Number Theory — http://flintlib.org/ (version *2.4.1*, included)
+* FLINT: Fast Library for Number Theory — http://flintlib.org/ (version 2.4.1+)
 
 Building
 ======
 The compilation is done using GYP and make.
 
 ```
-$ gyp --depth=. --no-duplicate-basename-check
-$ make library
+$ gyp --depth=.
+$ make
 ```
+
+See Dockerfile for build instructions.
 
 Debian-based
 ------
-```sudo apt-get install libgmp-dev libmpfr-dev libmpfr4 gcc g++ automake autoconf```.
+```apt-get -yy install libflint-2.5.2 libflint-dev libgmp-dev libmpfr-dev gcc g++ make automake autoconf gyp```.
 
 RHEL-based
 ------
-```sudo yum install gcc gcc-c++ automake autoconf```.
-GMP and MPFR versions in the repo are outdated so you should just compile them from sources. Look for download links below.
+```yum install gcc gcc-c++ make automake autoconf mpfr-devel gmp-devel gyp```.
+
+Note:
+  * You will need `epel-release` to download `gyp`
+  * Flint must be compiled from sources
 
 Windows
 -------
