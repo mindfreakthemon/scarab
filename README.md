@@ -1,6 +1,8 @@
 Scarab
 ======
 
+[![CircleCI](https://circleci.com/gh/mindfreakthemon/scarab.svg?style=svg&circle-token=25fb2f824128e9da50ae5d8ee333a4cad37d9392)](https://circleci.com/gh/mindfreakthemon/scarab)
+
 FHE Library for encrypting/decrypting bits and performing add/mul (and/xor) over encrypted data.
 Port/fork of the existing [library](https://github.com/hcrypt-project/libScarab) by Henning Perl.
 
