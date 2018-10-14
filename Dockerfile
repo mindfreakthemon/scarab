@@ -4,7 +4,7 @@ WORKDIR /usr/local/scarab
 COPY . /usr/local/scarab
 RUN apt-get update && \
     apt-get -yy install libflint-2.5.2 libflint-dev libgmp-dev libmpfr-dev gcc g++ make automake autoconf gyp && \
-    gyp --depth=. --no-duplicate-basename-check && \
+    gyp --depth=. && \
     find . -type f -exec touch {} + && \
     make
 
@@ -28,7 +28,7 @@ RUN yum -y update && yum -y install epel-release && \
     make install && \
     popd && \
     popd && \
-    gyp --depth=. --no-duplicate-basename-check && \
+    gyp --depth=. && \
     find . -type f -exec touch {} + && \
     make
 
