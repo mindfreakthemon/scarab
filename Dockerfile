@@ -8,7 +8,7 @@ RUN apt-get update && \
     find . -type f -exec touch {} + && \
     make
 
-CMD ./out/Default/test
+RUN /usr/local/scarab/out/Default/test
 
 FROM centos:7 as rhel-based
 
@@ -32,4 +32,13 @@ RUN yum -y update && yum -y install epel-release && \
     find . -type f -exec touch {} + && \
     make
 
-CMD ./out/Default/test
+RUN /usr/local/scarab/out/Default/test
+
+FROM alpine
+
+WORKDIR /usr/local/scarab
+
+COPY --from=debian-based /usr/local/scarab/out/Default /usr/local/scarab/debian
+COPY --from=rhel-based /usr/local/scarab/out/Default /usr/local/scarab/centos
+
+CMD sh
